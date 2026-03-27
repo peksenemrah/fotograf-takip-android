@@ -15,28 +15,30 @@
         android:fillColor="#FFFFFF"
         android:pathData="M44,34 L44,30 Q44,28 46,28 L62,28 Q64,28 64,30 L64,34 Z" />
 
-    <!-- Lens dış -->
+    <!-- Flash -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M28,50 L40,50 L40,56 L28,56 Z" />
+
+    <!-- Lens dış halkası -->
     <path
         android:fillColor="#1d4ed8"
         android:pathData="M54,58 m-16,0 a16,16 0 1,0 32,0 a16,16 0 1,0 -32,0" />
 
-    <!-- Lens iç -->
+    <!-- Lens orta halkası -->
     <path
         android:fillColor="#3b82f6"
         android:pathData="M54,58 m-11,0 a11,11 0 1,0 22,0 a11,11 0 1,0 -22,0" />
+
+    <!-- Lens merkezi -->
+    <path
+        android:fillColor="#1e40af"
+        android:pathData="M54,58 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0" />
 
     <!-- Lens parlama -->
     <path
         android:fillColor="#FFFFFF"
         android:fillAlpha="0.4"
-        android:pathData="M48,52 a5,5 0 0,1 8,0" />
-
-    <!-- ₺ sembolü -->
-    <text
-        android:fontFamily="sans-serif-condensed"
-        android:textColor="#fbbf24"
-        android:textSize="18"
-        android:x="72"
-        android:y="78" />
+        android:pathData="M48,53 Q50,50 54,50 Q51,53 50,56 Z" />
 
 </vector>
