@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fotoğraf Albümü Ödeme Takibi</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --radius: 8px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        header h1 { font-size: 20px; font-weight: 600; }
+        header .school-name { font-size: 14px; opacity: 0.85; margin-left: auto; }
+        nav {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+        }
+        nav button {
+            padding: 14px 20px;
+            border: none;
+            background: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        nav button:hover { color: var(--primary); }
+        nav button.active { color: var(--primary); border-bottom-color: var(--primary); }
+        main { max-width: 1200px; margin: 24px auto; padding: 0 24px; }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .card-title { font-size: 16px; font-weight: 600; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        .stat-label { font-size: 13px; color: var(--text-light); margin-bottom: 8px; }
+        .stat-value { font-size: 28px; font-weight: 700; }
+        .stat-value.success { color: var(--success); }
+        .stat-value.danger { color: var(--danger); }
+        .stat-value.primary { color: var(--primary); }
+        .stat-sub { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #15803d; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-outline:hover { background: var(--bg); }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        .btn-icon {
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-light);
+            font-size: 14px;
+            transition: all 0.15s;
+        }
+        .btn-icon:hover { background: var(--bg); color: var(--text); }
+        .btn-icon.danger:hover { background: #fee2e2; color: var(--danger); }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            color: var(--text);
+            background: white;
+            transition: border-color 0.15s;
+            font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        textarea { resize: vertical; min-height: 120px; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+        }
+        td { padding: 11px 12px; border-bottom: 1px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
+        tr.paid td { background: #f0fdf4; }
+        tr.paid:hover td { background: #dcfce7; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-success { background: #dcfce7; color: #16a34a; }
+        .badge-danger { background: #fee2e2; color: #dc2626; }
+        .badge-gray { background: #f1f5f9; color: #64748b; }
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        .class-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .class-card:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(37,99,235,0.1); }
+        .class-card.selected { border-color: var(--primary); background: #eff6ff; }
+        .class-card .cn { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .class-card .cs { font-size: 12px; color: var(--text-light); }
+        .class-card .bar { margin-top: 8px; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; }
+        .class-card .bar-fill { height: 100%; background: var(--success); border-radius: 2px; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 560px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .modal-title { font-size: 18px; font-weight: 600; }
+        .modal-close {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg);
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--text-light);
+        }
+        .modal-close:hover { background: var(--border); }
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            background: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .search-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .search-row input { flex: 1; min-width: 160px; }
+        .empty-state { text-align: center; padding: 48px 24px; color: var(--text-light); }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        input[type="checkbox"] { width: auto; cursor: pointer; accent-color: var(--primary); }
+        .divider { height: 1px; background: var(--border); margin: 20px 0; }
+        .section-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+        .section-sub { font-size: 14px; color: var(--text-light); margin-bottom: 20px; }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            main { padding: 0 12px; }
+            .card { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+    </svg>
+    <h1>Fotoğraf Albümü Ödeme Takibi</h1>
+    <span class="school-name" id="headerSchoolName"></span>
+</header>
+
+<nav>
+    <button class="active" data-tab="siniflar" onclick="switchTab('siniflar')">📚 Sınıflar</button>
+    <button data-tab="odemeler" onclick="switchTab('odemeler')">💰 Ödemeler</button>
+    <button data-tab="raporlar" onclick="switchTab('raporlar')">📊 Raporlar</button>
+    <button data-tab="ayarlar" onclick="switchTab('ayarlar')">⚙️ Ayarlar</button>
+</nav>
+
+<main id="content"></main>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal" id="modal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ==================== STORAGE ====================
+const SK = {
+    settings: 'pt_settings',
+    classes: 'pt_classes',
+    students: 'pt_students',
+};
+
+function load(key, def) {
+    try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; }
+    catch { return def; }
+}
+function save(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+
+let settings = load(SK.settings, { schoolName: '', albumPrice: 0, photographerFee: 0, photographerPaid: false, photographerPaidDate: '' });
+let classes = load(SK.classes, []);
+let students = load(SK.students, []);
+
+function saveSettings() { save(SK.settings, settings); }
+function saveClasses() { save(SK.classes, classes); }
+function saveStudents() { save(SK.students, students); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+// ==================== STATE ====================
+let st = {
+    tab: 'siniflar',
+    selectedClass: null,
+    search: '',
+    classSearch: '',
+    filter: 'all',
+};
+
+// ==================== TABS ====================
+function switchTab(tab) {
+    st.tab = tab;
+    st.selectedClass = null;
+    st.search = '';
+    st.classSearch = '';
+    st.filter = 'all';
+    document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    render();
+}
+
+function render() {
+    const m = document.getElementById('content');
+    if (st.tab === 'siniflar') m.innerHTML = tabSiniflar();
+    else if (st.tab === 'odemeler') m.innerHTML = tabOdemeler();
+    else if (st.tab === 'raporlar') m.innerHTML = tabRaporlar();
+    else if (st.tab === 'ayarlar') m.innerHTML = tabAyarlar();
+    const sn = document.getElementById('headerSchoolName');
+    if (sn) sn.textContent = settings.schoolName || '';
+}
+
+// ==================== SINIFLAR ====================
+function tabSiniflar() {
+    const filtered = classes.filter(c => c.name.toLowerCase().includes(st.classSearch.toLowerCase()));
+
+    let classCards = '';
+    if (filtered.length === 0) {
+        classCards = `<div class="empty-state"><div class="icon">🏫</div><p>${classes.length === 0 ? 'Henüz sınıf eklenmedi.' : 'Sonuç bulunamadı.'}</p></div>`;
+    } else {
+        classCards = `<div class="class-grid">` + filtered.map(c => {
+            const cs = students.filter(s => s.classId === c.id);
+            const paid = cs.filter(s => s.hasPaid).length;
+            const total = cs.length;
+            const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
+            const sel = st.selectedClass === c.id ? 'selected' : '';
+            return `<div class="class-card ${sel}" onclick="selectClass('${c.id}')">
+                <div class="cn">${esc(c.name)}</div>
+                <div class="cs">${paid}/${total} ödendi</div>
+                <div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>
+            </div>`;
+        }).join('') + `</div>`;
+    }
+
+    let studentSection = '';
+    if (st.selectedClass) {
+        const cls = classes.find(c => c.id === st.selectedClass);
+        if (cls) {
+            const cs = students.filter(s => s.classId === st.selectedClass);
+            const filtered2 = cs.filter(s => s.name.toLowerCase().includes(st.search.toLowerCase()));
+            const paid = cs.filter(s => s.hasPaid).length;
+
+            let rows = '';
+            if (filtered2.length === 0) {
+                rows = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-light)">${cs.length === 0 ? 'Bu sınıfta öğrenci yok.' : 'Sonuç bulunamadı.'}</td></tr>`;
+            } else {
+                rows = filtered2.map((s, i) => {
+                    const no = cs.findIndex(x => x.id === s.id) + 1;
+                    return `<tr class="${s.hasPaid ? 'paid' : ''}">
+                        <td style="color:var(--text-light);font-size:13px">${no}</td>
+                        <td>${esc(s.name)}</td>
+                        <td>${s.hasPaid
+                            ? `<span class="badge badge-success">✓ Ödedi</span>${s.paymentDate ? `<span style="font-size:12px;color:var(--text-light);margin-left:6px">${fdate(s.paymentDate)}</span>` : ''}`
+                            : `<span class="badge badge-danger">✗ Ödemedi</span>`
+                        }</td>
+                        <td>
+                            <div style="display:flex;gap:6px;align-items:center">
+                                <button class="btn btn-sm ${s.hasPaid ? 'btn-outline' : 'btn-success'}" onclick="doPayment('${s.id}')">${s.hasPaid ? 'İptal' : 'Ödendi ✓'}</button>
+                                <button class="btn-icon danger" onclick="delStudent('${s.id}','${esc(s.name)}')" title="Sil">🗑</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                }).join('');
+            }
+
+            studentSection = `<div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">📋 ${esc(cls.name)} Sınıfı</div>
+                        <div style="font-size:13px;color:var(--text-light);margin-top:2px">${paid}/${cs.length} öğrenci ödedi</div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button class="btn btn-outline btn-sm" onclick="openBulkStudents('${st.selectedClass}')">📥 Toplu Ekle</button>
+                        <button class="btn btn-primary btn-sm" onclick="openAddStudent('${st.selectedClass}')">+ Öğrenci</button>
+                        <button class="btn-icon danger" onclick="delClass('${st.selectedClass}','${esc(cls.name)}')" title="Sınıfı Sil">🗑</button>
+                    </div>
+                </div>
+                <div class="search-row">
+                    <input type="text" placeholder="Öğrenci ara..." value="${esc(st.search)}" oninput="st.search=this.value;render()">
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>#</th><th>Öğrenci Adı</th><th>Durum</th><th>İşlem</th></tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            </div>`;
+        }
+    }
+
+    return `<div>
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="section-title">Sınıflar</div>
+                    <div class="section-sub">${classes.length} sınıf · ${students.length} öğrenci</div>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button class="btn btn-outline" onclick="openBulkClasses()">📥 Toplu Sınıf Ekle</button>
+                    <button class="btn btn-primary" onclick="openAddClass()">+ Sınıf Ekle</button>
+                </div>
+            </div>
+            <div class="search-row">
+                <input type="text" placeholder="Sınıf ara..." value="${esc(st.classSearch)}" oninput="st.classSearch=this.value;render()">
+            </div>
+            ${classCards}
+        </div>
+        ${studentSection}
+    </div>`;
+}
+
+function selectClass(id) {
+    st.selectedClass = st.selectedClass === id ? null : id;
+    st.search = '';
+    render();
+    if (st.selectedClass) setTimeout(() => {
+        const cards = document.querySelectorAll('.card');
+        if (cards.length > 1) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 30);
+}
+
+// ==================== ODEMELER ====================
+function tabOdemeler() {
+    let list = [...students];
+    if (st.selectedClass) list = list.filter(s => s.classId === st.selectedClass);
+    if (st.search) list = list.filter(s => s.name.toLowerCase().includes(st.search.toLowerCase()));
+    if (st.filter === 'paid') list = list.filter(s => s.hasPaid);
+    else if (st.filter === 'unpaid') list = list.filter(s => !s.hasPaid);
+
+    list.sort((a, b) => {
+        if (a.hasPaid !== b.hasPaid) return a.hasPaid ? 1 : -1;
+        return a.name.localeCompare(b.name, 'tr');
+    });
+
+    const paid = list.filter(s => s.hasPaid).length;
+    const classOpts = `<option value="">Tüm Sınıflar</option>` +
+        classes.map(c => `<option value="${c.id}" ${st.selectedClass === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
+
+    const rows = list.length === 0
+        ? `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-light)">Sonuç bulunamadı.</td></tr>`
+        : list.map(s => {
+            const cls = classes.find(c => c.id === s.classId);
+            return `<tr class="${s.hasPaid ? 'paid' : ''}">
+                <td>${esc(s.name)}</td>
+                <td>${cls ? esc(cls.name) : '-'}</td>
+                <td>${s.hasPaid ? `<span class="badge badge-success">✓ Ödedi</span>` : `<span class="badge badge-danger">✗ Ödemedi</span>`}</td>
+                <td>${s.paymentDate ? fdate(s.paymentDate) : '-'}</td>
+                <td>${s.hasPaid ? fmoney(settings.albumPrice) : '-'}</td>
+                <td><button class="btn btn-sm ${s.hasPaid ? 'btn-outline' : 'btn-success'}" onclick="doPayment('${s.id}')">${s.hasPaid ? 'İptal' : 'Ödendi ✓'}</button></td>
+            </tr>`;
+        }).join('');
+
+    return `<div class="card">
+        <div class="card-header">
+            <div class="section-title">Ödeme Takibi</div>
+            <div style="font-size:14px;color:var(--text-light)">${paid} ödedi · ${list.length - paid} ödemedi</div>
+        </div>
+        <div class="search-row">
+            <input type="text" placeholder="Öğrenci ara..." value="${esc(st.search)}" oninput="st.search=this.value;render()">
+            <select onchange="st.selectedClass=this.value||null;render()" style="min-width:150px">${classOpts}</select>
+            <select onchange="st.filter=this.value;render()" style="min-width:140px">
+                <option value="all" ${st.filter==='all'?'selected':''}>Tüm Öğrenciler</option>
+                <option value="paid" ${st.filter==='paid'?'selected':''}>Ödeyenler</option>
+                <option value="unpaid" ${st.filter==='unpaid'?'selected':''}>Ödemeyenler</option>
+            </select>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>Öğrenci Adı</th><th>Sınıf</th><th>Durum</th><th>Ödeme Tarihi</th><th>Tutar</th><th>İşlem</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>
+    </div>`;
+}
+
+// ==================== RAPORLAR ====================
+function tabRaporlar() {
+    const total = students.length;
+    const paidList = students.filter(s => s.hasPaid);
+    const unpaidList = students.filter(s => !s.hasPaid);
+    const paidCnt = paidList.length;
+    const unpaidCnt = unpaidList.length;
+    const pct = total > 0 ? Math.round((paidCnt / total) * 100) : 0;
+    const collected = paidCnt * settings.albumPrice;
+    const fee = settings.photographerFee;
+    const net = collected - fee;
+    const feePct = fee > 0 ? Math.min(100, Math.round((collected / fee) * 100)) : 0;
+
+    const classRows = classes
+        .map(c => {
+            const cs = students.filter(s => s.classId === c.id);
+            const p = cs.filter(s => s.hasPaid).length;
+            const t = cs.length;
+            const pp = t > 0 ? Math.round((p / t) * 100) : 0;
+            return { c, t, p, u: t - p, pp, col: p * settings.albumPrice };
+        })
+        .sort((a, b) => a.c.name.localeCompare(b.c.name, 'tr'));
+
+    const classTableRows = classRows.length === 0
+        ? `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-light)">Sınıf bulunamadı.</td></tr>`
+        : classRows.map(r => `<tr>
+            <td><strong>${esc(r.c.name)}</strong></td>
+            <td>${r.t}</td>
+            <td><span class="badge badge-success">${r.p}</span></td>
+            <td><span class="badge badge-danger">${r.u}</span></td>
+            <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <div style="flex:1;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden">
+                        <div style="height:100%;width:${r.pp}%;background:var(--success);border-radius:4px"></div>
+                    </div>
+                    <span style="font-size:12px;color:var(--text-light);min-width:36px">%${r.pp}</span>
+                </div>
+            </td>
+            <td>${fmoney(r.col)}</td>
+        </tr>`).join('');
+
+    const recent = [...paidList].filter(s => s.paymentDate).sort((a, b) => b.paymentDate.localeCompare(a.paymentDate)).slice(0, 10);
+    const recentRows = recent.length === 0
+        ? `<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text-light)">Henüz ödeme yok.</td></tr>`
+        : recent.map(s => {
+            const cls = classes.find(c => c.id === s.classId);
+            return `<tr><td>${esc(s.name)}</td><td>${cls ? esc(cls.name) : '-'}</td><td>${fdate(s.paymentDate)}</td></tr>`;
+        }).join('');
+
+    const unpaidShow = unpaidList.slice(0, 25);
+
+    return `<div>
+        <div class="grid-4" style="margin-bottom:16px">
+            <div class="stat-card">
+                <div class="stat-label">Toplam Öğrenci</div>
+                <div class="stat-value">${total}</div>
+                <div class="stat-sub">${classes.length} sınıf</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Ödeme Yapan</div>
+                <div class="stat-value success">${paidCnt}</div>
+                <div class="stat-sub">%${pct} tamamlandı</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Ödeme Yapmayan</div>
+                <div class="stat-value danger">${unpaidCnt}</div>
+                <div class="stat-sub">${fmoney(unpaidCnt * settings.albumPrice)} bekliyor</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Toplanan Para</div>
+                <div class="stat-value primary">${fmoney(collected)}</div>
+                <div class="stat-sub">Birim: ${fmoney(settings.albumPrice)}</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title" style="margin-bottom:16px">💰 Mali Özet</div>
+            <div class="grid-3" style="margin-bottom:16px">
+                <div style="padding:16px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0">
+                    <div style="font-size:13px;color:#15803d;font-weight:500">Toplanan Tutar</div>
+                    <div style="font-size:24px;font-weight:700;color:#16a34a;margin-top:4px">${fmoney(collected)}</div>
+                    <div style="font-size:12px;color:#15803d;margin-top:2px">${paidCnt} × ${fmoney(settings.albumPrice)}</div>
+                </div>
+                <div style="padding:16px;background:#fff7ed;border-radius:8px;border:1px solid #fed7aa">
+                    <div style="font-size:13px;color:#c2410c;font-weight:500">Fotoğrafçıya Ödenecek</div>
+                    <div style="font-size:24px;font-weight:700;color:#ea580c;margin-top:4px">${fmoney(fee)}</div>
+                    <div style="font-size:12px;color:#c2410c;margin-top:2px">
+                        ${settings.photographerPaid
+                            ? `✓ Ödendi${settings.photographerPaidDate ? ` (${fdate(settings.photographerPaidDate)})` : ''}`
+                            : 'Henüz ödenmedi'}
+                    </div>
+                </div>
+                <div style="padding:16px;background:${net >= 0 ? '#eff6ff' : '#fef2f2'};border-radius:8px;border:1px solid ${net >= 0 ? '#bfdbfe' : '#fecaca'}">
+                    <div style="font-size:13px;color:${net >= 0 ? '#1d4ed8' : '#dc2626'};font-weight:500">Net Durum</div>
+                    <div style="font-size:24px;font-weight:700;color:${net >= 0 ? '#2563eb' : '#dc2626'};margin-top:4px">${fmoney(Math.abs(net))}</div>
+                    <div style="font-size:12px;color:${net >= 0 ? '#1d4ed8' : '#dc2626'};margin-top:2px">${net >= 0 ? 'Fazladan toplanan' : 'Açık borç'}</div>
+                </div>
+            </div>
+            <div style="padding:16px;background:var(--bg);border-radius:8px">
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+                    <strong>Fotoğrafçı Ödemesi:</strong>
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-weight:normal">
+                        <input type="checkbox" ${settings.photographerPaid ? 'checked' : ''} onchange="togglePhotoPaid(this.checked)" style="width:16px;height:16px">
+                        Ödendi olarak işaretle
+                    </label>
+                    ${settings.photographerPaid && settings.photographerPaidDate ? `<span class="badge badge-success">${fdate(settings.photographerPaidDate)}</span>` : ''}
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                    <span style="font-size:13px;color:var(--text-light);white-space:nowrap">Tahsilat: %${feePct}</span>
+                    <div style="flex:1;height:10px;background:#e2e8f0;border-radius:5px;overflow:hidden">
+                        <div style="height:100%;width:${feePct}%;background:var(--success);border-radius:5px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📋 Sınıf Bazlı Rapor</div>
+                <button class="btn btn-outline btn-sm" onclick="exportCSV()">📥 CSV İndir</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Sınıf</th><th>Toplam</th><th>Ödedi</th><th>Ödemedi</th><th>Tamamlanma</th><th>Toplanan</th></tr></thead>
+                    <tbody>${classTableRows}</tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title" style="margin-bottom:16px">🕐 Son Ödemeler</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Öğrenci</th><th>Sınıf</th><th>Tarih</th></tr></thead>
+                        <tbody>${recentRows}</tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title" style="margin-bottom:16px">⚠️ Ödemeyen Öğrenciler (${unpaidCnt})</div>
+                ${unpaidList.length === 0
+                    ? `<div class="empty-state"><div class="icon">🎉</div><p>Tüm öğrenciler ödedi!</p></div>`
+                    : `<div style="max-height:320px;overflow-y:auto">` +
+                      unpaidShow.map(s => {
+                          const cls = classes.find(c => c.id === s.classId);
+                          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+                              <div>
+                                  <div style="font-size:14px">${esc(s.name)}</div>
+                                  <div style="font-size:12px;color:var(--text-light)">${cls ? esc(cls.name) : ''}</div>
+                              </div>
+                              <button class="btn btn-sm btn-success" onclick="doPayment('${s.id}')">Ödendi ✓</button>
+                          </div>`;
+                      }).join('') +
+                      (unpaidList.length > 25 ? `<div style="text-align:center;padding:10px;color:var(--text-light);font-size:13px">... ve ${unpaidList.length - 25} öğrenci daha</div>` : '') +
+                      `</div>`
+                }
+            </div>
+        </div>
+    </div>`;
+}
+
+// ==================== AYARLAR ====================
+function tabAyarlar() {
+    return `<div class="card" style="max-width:560px">
+        <div class="section-title" style="margin-bottom:4px">⚙️ Ayarlar</div>
+        <div class="section-sub">Uygulama geneli ayarlar</div>
+
+        <div class="form-group">
+            <label>Okul Adı</label>
+            <input type="text" id="s_school" value="${esc(settings.schoolName)}" placeholder="Örn: Atatürk İlkokulu">
+        </div>
+        <div class="form-group">
+            <label>Albüm Birim Fiyatı (₺)</label>
+            <input type="number" id="s_price" value="${settings.albumPrice}" placeholder="0" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+            <label>Fotoğrafçıya Ödenecek Toplam Tutar (₺)</label>
+            <input type="number" id="s_fee" value="${settings.photographerFee}" placeholder="0" min="0" step="0.01">
+            <div style="font-size:12px;color:var(--text-light);margin-top:4px">Fotoğrafçıya ödemeniz gereken toplam ücret</div>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettingsForm()">Kaydet</button>
+
+        <div class="divider"></div>
+
+        <div class="card-title" style="margin-bottom:12px;color:var(--danger)">⚠️ Veri Yönetimi</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="exportJSON()">💾 Yedek Al (JSON)</button>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFile').click()">📂 Yedek Yükle</button>
+            <button class="btn btn-danger btn-sm" onclick="clearAll()">🗑 Tüm Verileri Sıfırla</button>
+        </div>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+    </div>`;
+}
+
+// ==================== ACTIONS ====================
+function saveSettingsForm() {
+    settings.schoolName = document.getElementById('s_school').value.trim();
+    settings.albumPrice = parseFloat(document.getElementById('s_price').value) || 0;
+    settings.photographerFee = parseFloat(document.getElementById('s_fee').value) || 0;
+    saveSettings();
+    toast('Ayarlar kaydedildi!', 'success');
+    render();
+}
+
+function togglePhotoPaid(checked) {
+    settings.photographerPaid = checked;
+    settings.photographerPaidDate = checked ? today() : '';
+    saveSettings();
+    render();
+}
+
+function doPayment(id) {
+    const s = students.find(x => x.id === id);
+    if (!s) return;
+    if (s.hasPaid) {
+        s.hasPaid = false;
+        s.paymentDate = null;
+        saveStudents();
+        toast(`${s.name} — ödeme iptal edildi`);
+        render();
+    } else {
+        openPaymentModal(id);
+    }
+}
+
+function openPaymentModal(id) {
+    const s = students.find(x => x.id === id);
+    if (!s) return;
+    openModal('Ödeme Tarihi Seç', `
+        <div class="form-group">
+            <label>Öğrenci: <strong>${esc(s.name)}</strong></label>
+        </div>
+        <div class="form-group">
+            <label>Ödeme Tarihi</label>
+            <input type="date" id="payDate" value="${today()}" max="${today()}">
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+            <button class="btn btn-outline" onclick="closeModal()">İptal</button>
+            <button class="btn btn-success" onclick="confirmPay('${id}')">Ödendi Olarak Kaydet</button>
+        </div>
+    `);
+}
+
+function confirmPay(id) {
+    const s = students.find(x => x.id === id);
+    if (!s) return;
+    const d = document.getElementById('payDate');
+    s.hasPaid = true;
+    s.paymentDate = d ? d.value : today();
+    saveStudents();
+    closeModal();
+    toast(`${s.name} — ödendi ✓`, 'success');
+    render();
+}
+
+// CLASS ACTIONS
+function openAddClass() {
+    openModal('Yeni Sınıf Ekle', `
+        <div class="form-group">
+            <label>Sınıf Adı</label>
+            <input type="text" id="nc_name" placeholder="Örn: 1-A, 2-B, 10/C" autofocus>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+            <button class="btn btn-outline" onclick="closeModal()">İptal</button>
+            <button class="btn btn-primary" onclick="addClass()">Ekle</button>
+        </div>
+    `);
+}
+
+function addClass() {
+    const name = document.getElementById('nc_name').value.trim();
+    if (!name) { toast('Sınıf adı boş olamaz!', 'error'); return; }
+    if (classes.find(c => c.name.toLowerCase() === name.toLowerCase())) { toast('Bu sınıf zaten var!', 'error'); return; }
+    classes.push({ id: uid(), name });
+    saveClasses();
+    closeModal();
+    toast(`"${name}" sınıfı eklendi`, 'success');
+    render();
+}
+
+function openBulkClasses() {
+    openModal('Toplu Sınıf Ekle', `
+        <div class="form-group">
+            <label>Sınıf Listesi (her satıra bir sınıf adı)</label>
+            <textarea id="bc_input" placeholder="1-A&#10;1-B&#10;1-C&#10;2-A&#10;2-B&#10;3-A&#10;..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+            <button class="btn btn-outline" onclick="closeModal()">İptal</button>
+            <button class="btn btn-primary" onclick="bulkAddClasses()">Ekle</button>
+        </div>
+    `);
+}
+
+function bulkAddClasses() {
+    const text = document.getElementById('bc_input').value;
+    const names = text.split('\n').map(l => l.trim()).filter(l => l);
+    let added = 0, skipped = 0;
+    names.forEach(name => {
+        if (classes.find(c => c.name.toLowerCase() === name.toLowerCase())) { skipped++; }
+        else { classes.push({ id: uid(), name }); added++; }
+    });
+    saveClasses();
+    closeModal();
+    toast(`${added} sınıf eklendi${skipped ? `, ${skipped} zaten vardı` : ''}`, 'success');
+    render();
+}
+
+function delClass(id, name) {
+    const cnt = students.filter(s => s.classId === id).length;
+    if (!confirm(`"${name}" sınıfını ve ${cnt} öğrencisini silmek istediğinizden emin misiniz?`)) return;
+    classes = classes.filter(c => c.id !== id);
+    students = students.filter(s => s.classId !== id);
+    saveClasses(); saveStudents();
+    st.selectedClass = null;
+    toast(`"${name}" silindi`, 'success');
+    render();
+}
+
+// STUDENT ACTIONS
+function openAddStudent(classId) {
+    openModal('Öğrenci Ekle', `
+        <div class="form-group">
+            <label>Öğrenci Adı Soyadı</label>
+            <input type="text" id="ns_name" placeholder="Ad Soyad" autofocus>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+            <button class="btn btn-outline" onclick="closeModal()">İptal</button>
+            <button class="btn btn-primary" onclick="addStudent('${classId}')">Ekle</button>
+        </div>
+    `);
+}
+
+function addStudent(classId) {
+    const name = document.getElementById('ns_name').value.trim();
+    if (!name) { toast('Öğrenci adı boş olamaz!', 'error'); return; }
+    students.push({ id: uid(), classId, name, hasPaid: false, paymentDate: null });
+    saveStudents();
+    closeModal();
+    toast(`"${name}" eklendi`, 'success');
+    render();
+}
+
+function openBulkStudents(classId) {
+    const cls = classes.find(c => c.id === classId);
+    openModal(`${cls ? cls.name + ' — ' : ''}Toplu Öğrenci Ekle`, `
+        <div class="form-group">
+            <label>Öğrenci Listesi (her satıra bir isim)</label>
+            <textarea id="bs_input" placeholder="Ahmet Yılmaz&#10;Ayşe Kaya&#10;Mehmet Demir&#10;..." style="min-height:180px"></textarea>
+            <div style="font-size:12px;color:var(--text-light);margin-top:6px">
+                Numaralı listeler de desteklenir: "1. Ad Soyad" → "Ad Soyad"
+            </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+            <button class="btn btn-outline" onclick="closeModal()">İptal</button>
+            <button class="btn btn-primary" onclick="bulkAddStudents('${classId}')">Ekle</button>
+        </div>
+    `);
+}
+
+function bulkAddStudents(classId) {
+    const text = document.getElementById('bs_input').value;
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+    const names = lines.map(l => l.replace(/^\d+[\.\)\-:]\s*/, '').trim()).filter(l => l);
+    names.forEach(name => students.push({ id: uid(), classId, name, hasPaid: false, paymentDate: null }));
+    saveStudents();
+    closeModal();
+    toast(`${names.length} öğrenci eklendi`, 'success');
+    render();
+}
+
+function delStudent(id, name) {
+    if (!confirm(`"${name}" öğrencisini silmek istediğinizden emin misiniz?`)) return;
+    students = students.filter(s => s.id !== id);
+    saveStudents();
+    toast(`"${name}" silindi`, 'success');
+    render();
+}
+
+// EXPORT
+function exportCSV() {
+    const rows = [['Sınıf', 'Öğrenci Adı', 'Durum', 'Ödeme Tarihi', 'Tutar (₺)']];
+    classes.forEach(cls => {
+        students.filter(s => s.classId === cls.id).forEach(s => {
+            rows.push([cls.name, s.name, s.hasPaid ? 'Ödedi' : 'Ödemedi', s.paymentDate || '', s.hasPaid ? settings.albumPrice : 0]);
+        });
+    });
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+    dlFile('\uFEFF' + csv, 'odeme-takip.csv', 'text/csv;charset=utf-8');
+    toast('CSV indirildi', 'success');
+}
+
+function exportJSON() {
+    dlFile(JSON.stringify({ settings, classes, students, date: new Date().toISOString() }, null, 2), 'odeme-takip-yedek.json', 'application/json');
+    toast('Yedek alındı', 'success');
+}
+
+function importJSON(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        try {
+            const d = JSON.parse(ev.target.result);
+            if (!d.classes || !d.students) throw new Error();
+            if (!confirm('Mevcut tüm veriler silinecek ve yedekten geri yüklenecek. Emin misiniz?')) return;
+            settings = d.settings || settings;
+            classes = d.classes || [];
+            students = d.students || [];
+            saveSettings(); saveClasses(); saveStudents();
+            toast('Yedek yüklendi!', 'success');
+            render();
+        } catch { toast('Geçersiz yedek dosyası!', 'error'); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+}
+
+function dlFile(content, name, type) {
+    const b = new Blob([content], { type });
+    const u = URL.createObjectURL(b);
+    const a = document.createElement('a');
+    a.href = u; a.download = name; a.click();
+    URL.revokeObjectURL(u);
+}
+
+function clearAll() {
+    if (!confirm('TÜM VERİLER SİLİNECEK! Bu işlem geri alınamaz.')) return;
+    if (!confirm('Son onay: Tüm sınıflar ve öğrenciler silinecek.')) return;
+    classes = []; students = [];
+    settings = { schoolName: '', albumPrice: 0, photographerFee: 0, photographerPaid: false, photographerPaidDate: '' };
+    saveClasses(); saveStudents(); saveSettings();
+    toast('Tüm veriler silindi', 'error');
+    render();
+}
+
+// ==================== MODAL ====================
+function openModal(title, body) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = body;
+    document.getElementById('modalOverlay').classList.add('show');
+    setTimeout(() => {
+        const fi = document.querySelector('#modal input:not([type=hidden]):not([type=checkbox]), #modal textarea, #modal select');
+        if (fi) fi.focus();
+    }, 50);
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+function closeModalOnOverlay(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Enter' && document.getElementById('modalOverlay').classList.contains('show') && e.target.tagName === 'INPUT') {
+        const btn = document.querySelector('#modal .btn-primary, #modal .btn-success');
+        if (btn) btn.click();
+    }
+});
+
+// ==================== TOAST ====================
+function toast(msg, type = '') {
+    const c = document.getElementById('toast');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+// ==================== UTILS ====================
+function esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function fmoney(n) {
+    return '₺' + (Number(n) || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fdate(s) {
+    if (!s) return '-';
+    try { const [y,m,d] = s.split('-'); return `${d}.${m}.${y}`; } catch { return s; }
+}
+function today() { return new Date().toISOString().split('T')[0]; }
+
+// ==================== INIT ====================
+render();
+</script>
+</body>
+</html>

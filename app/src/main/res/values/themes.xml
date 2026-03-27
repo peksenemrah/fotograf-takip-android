@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.FotografTakip" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">#1d4ed8</item>
+        <item name="android:navigationBarColor">#ffffff</item>
+        <item name="android:windowBackground">#f8fafc</item>
+    </style>
+</resources>
